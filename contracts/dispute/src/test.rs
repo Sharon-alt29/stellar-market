@@ -3440,6 +3440,11 @@ fn test_appeal_tie_break_respects_method() {
     client.cast_appeal_vote(&appeal_id, &arb3, &VoteChoice::Freelancer, &String::from_str(&env, "F"));
     client.cast_appeal_vote(&appeal_id, &arb4, &VoteChoice::Freelancer, &String::from_str(&env, "F"));
 
+    let votes = client.get_appeal_votes(&appeal_id);
+    assert_eq!(votes.len(), 4);
+    assert_eq!(votes.get(0).unwrap().voter, arb1);
+    assert_eq!(votes.get(0).unwrap().reason, String::from_str(&env, "C"));
+
     let appeal_status = client.resolve_appeal(&appeal_id);
     assert_eq!(appeal_status, AppealStatus::RefundedBoth);
 }
