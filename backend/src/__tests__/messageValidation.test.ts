@@ -56,6 +56,22 @@ beforeEach(() => {
 // ─── Receiver lookup (#1436) ──────────────────────────────────────────────────
 
 describe("validateMessageSendAuthorization — receiver (#1436)", () => {
+  it("throws 400 when the sender and receiver are the same user", async () => {
+    await expect(
+      validateMessageSendAuthorization({
+        senderId: CLIENT_ID,
+        receiverId: CLIENT_ID,
+        prismaClient,
+      }),
+    ).rejects.toMatchObject({
+      status: 400,
+      message: "You cannot send a message to yourself.",
+    });
+
+    expect(prisma.user.findUnique).not.toHaveBeenCalled();
+    expect(prisma.job.findUnique).not.toHaveBeenCalled();
+  });
+
   it("throws 404 when the receiver does not exist", async () => {
     prisma.user.findUnique.mockResolvedValue(null);
 
